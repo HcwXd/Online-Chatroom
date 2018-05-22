@@ -10,143 +10,206 @@ html, body
   width: 100%
   display: flex
   font-family: 'Heebo', sans-serif
-  
-.channel-container
-  width: 20%
-  height: 100%
-  display: flex
-  flex-direction: column
-  background-color: #4d394b
-  background-attachment: scroll
+  background-color: #fff
   color: rgb(44, 45, 48)
-  font-size: 16px
-  // line-height: 16px
-  .users-profile
-    height: 70px
-    padding: 15px
-    .team-name
-      text-transform: uppercase
-      font-size: 18px
-      line-height: 24px
-      color: rgb(255,255,255)
-      font-weight: 500
-    .users-name
-      color: #ab9ba9
-  .dm-contact-list
-    // padding: 15px
-    .header
-      padding: 15px
-      color: rgb(202,196,201)
-      font-weight: 400
-      font-size: 18px
-    .contact
-      padding: 0 15px
-      cursor: pointer
-      position: relative
-      width: 100%
-      display: flex
-      color: rgb(202, 196, 201)
-      align-items: center
-      &:hover
-        background-color: #3E313C
-      .status
-        font-size: 10px
-        line-height: 26px
-        margin-right: 7px
-        color: #38978D
-      .name
-        line-height: 26px
-      .notification
-        position: absolute
-        background-color: #DC5960
-        color: #fff
-        font-size: 12px
-        height: 18px
-        padding: 0px 7px
-        border-radius: 16px
-        right: 15px
-    .inactive
-      .status, .name
-        color: rgb(202, 196, 201)
-        opacity: 0.5
-.content-container
-  position: relative
-  width: 80%
+
+
+.signin-background
+  width: 100%
   height: 100%
-  color: rgb(44,45,48)
   display: flex
-  flex-direction: column
-  .chat-header
-    height: 70px
-    padding: 15px
-    color: #717274
-    // border-bottom: 1px solid 
-    box-shadow: inset 0 0 0 1px #e8e8e8
-    .chat-name
-      font-size: 18px
-      font-weight: 600
-    .chat-status
-      font-size: 14px
-      color: #38978D
-    .chat-away
-      color: #717274
-      opacity: 0.7
-  .chat-content-list
-    font-size: 15px
-    flex-direction: column
-    padding: 15px
-    .msg-item
-      padding: 6px 0
-      .msg-pic
-        float: left
-        margin: 0 10px 0 0
-        border-radius: 3px
-        height: 36px
-        width: 36px
-        display: inline-block
-      .msg-row
-        display: inline-block
-      .msg-header
-        display: block
-        .msg-name
-          display: inline-block
-          color: #2c2d30
-          font-weight: 500
-        .msg-time
-          display: inline-block
-          color: #717274
-          font-size: 12px
-      .msg-content
-        display: inline-block
-        font-weight: 400
-  .send-box
+  background-color: #f9f9f9  
+  .signin-container
+    padding: 32px
     display: flex
-    justify-content: space-between
-    position: absolute
-    bottom: 2.5%
-    left: 2.5%
-    width: 95%
-    padding: 0px
-    border-radius: 6px
-    height: 44px
-    flex-wrap: wrap
-    .send-content
-      padding-left: 10px
-      border: 2px solid #717274
-      border-radius: 6px 0 0 6px
-      height: auto
-      font-size: 18px
-      width: 94%
-      &:focus
-        outline: 0
-        box-shadow: none
+    width: 60%
+    height: auto
+    background-color: #fff
+    color: rgb(44, 45, 48)
+    border: 1px solid rgb(232, 232, 232)
+    position: fixed
+    top: 50%
+    left: 50%
+    transform: translate(-50%, -50%)
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25)
+    border-radius: 4px
+    flex-direction: column
+    align-items: center
+    .signin-card
+      display: flex
+      flex-direction: column
+      align-items: center
+      .username-input, .password-input
+        border: 1px solid #a0a0a2
         color: #2c2d30
-    .sent-button
+        padding: 12px
+        height: auto
+        width: 100%
+        font-size: 18px
+        width: 94%
+        margin-bottom: 8px
+        border-radius: 4px
+        &:focus
+          outline-color: rgb(44, 45, 48)
+          outline-width: 0px
+          box-shadow: none
+          color: #2c2d30
+      .signin-button
+        box-shadow: inset 0 -2px rgba(0,0,0,.25)
+        width: 100%
+        margin-top: 21px
+        margin-bottom: 21px
+        background-color: rgb(0, 137, 82)
+        border-radius: 4px
+        color: rgb(255, 255, 255)
+        padding: 14px 32px
+        font-size: 20px
+        font-weight: 400
+        cursor: pointer
+
+
+
+  
+.chatroom-container
+  width: 100%
+  height: 100%
+  display: none
+  .channel-container
+    width: 20%
+    height: 100%
+    display: flex
+    flex-direction: column
+    background-color: #4d394b
+    background-attachment: scroll
+    color: rgb(44, 45, 48)
+    font-size: 16px
+    // line-height: 16px
+    .users-profile
+      height: 70px
+      padding: 15px
+      .team-name
+        text-transform: uppercase
+        font-size: 18px
+        line-height: 24px
+        color: rgb(255,255,255)
+        font-weight: 500
+      .users-name
+        color: #ab9ba9
+    .dm-contact-list
+      // padding: 15px
+      .header
+        padding: 15px
+        color: rgb(202,196,201)
+        font-weight: 400
+        font-size: 18px
+      .contact
+        padding: 0 15px
+        cursor: pointer
+        position: relative
+        width: 100%
+        display: flex
+        color: rgb(202, 196, 201)
+        align-items: center
+        &:hover
+          background-color: #3E313C
+        .status
+          font-size: 10px
+          line-height: 26px
+          margin-right: 7px
+          color: #38978D
+        .name
+          line-height: 26px
+        .notification
+          position: absolute
+          background-color: #DC5960
+          color: #fff
+          font-size: 12px
+          height: 18px
+          padding: 0px 7px
+          border-radius: 16px
+          right: 15px
+      .inactive
+        .status, .name
+          color: rgb(202, 196, 201)
+          opacity: 0.5
+  .content-container
+    position: relative
+    width: 80%
+    height: 100%
+    color: rgb(44,45,48)
+    display: flex
+    flex-direction: column
+    .chat-header
+      height: 70px
+      padding: 15px
       color: #717274
-      border: 2px solid #717274
-      border-radius: 0 6px 6px 0
+      // border-bottom: 1px solid 
+      box-shadow: inset 0 0 0 1px #e8e8e8
+      .chat-name
+        font-size: 18px
+        font-weight: 600
+      .chat-status
+        font-size: 14px
+        color: #38978D
+      .chat-away
+        color: #717274
+        opacity: 0.7
+    .chat-content-list
+      font-size: 15px
+      flex-direction: column
+      padding: 15px
+      .msg-item
+        padding: 6px 0
+        .msg-pic
+          float: left
+          margin: 0 10px 0 0
+          border-radius: 3px
+          height: 36px
+          width: 36px
+          display: inline-block
+        .msg-row
+          display: inline-block
+        .msg-header
+          display: block
+          .msg-name
+            display: inline-block
+            color: #2c2d30
+            font-weight: 500
+          .msg-time
+            display: inline-block
+            color: #717274
+            font-size: 12px
+        .msg-content
+          display: inline-block
+          font-weight: 400
+    .send-box
+      display: flex
+      justify-content: space-between
+      position: absolute
+      bottom: 2.5%
+      left: 2.5%
+      width: 95%
+      padding: 0px
+      border-radius: 6px
       height: 44px
-      width: 6%
-      font-size: 25px      
+      flex-wrap: wrap
+      .send-content
+        padding-left: 10px
+        border: 2px solid #717274
+        border-radius: 6px 0 0 6px
+        height: auto
+        font-size: 18px
+        width: 94%
+        &:focus
+          outline: 0
+          box-shadow: none
+          color: #2c2d30
+      .sent-button
+        color: #717274
+        border: 2px solid #717274
+        border-radius: 0 6px 6px 0
+        height: 44px
+        width: 6%
+        font-size: 25px      
       
       
