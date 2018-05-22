@@ -7,6 +7,8 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
+const SocketHander = require('./socket/socketHandler');
+
 var app = express();
 
 const server = require('http').Server(app);
@@ -16,13 +18,24 @@ let onlineCount = 0;
 
 io.on('connection', (socket) => {
   onlineCount++;
-  console.log('a user connected');
+  console.log(`A user connected, now ${onlineCount} online`);
 
-  io.emit("message", `Now ${onlineCount} online`);
+  io.emit("newConnect", `Now ${onlineCount} online`);
+
+  io.emit("")
+
+  socketHander = new SocketHander();
+
+  socketHander.connect();
+
+  socket.on("message", (obj) => {
+    socketHander.storeMessages(obj);
+    io.emit("message", obj);
+  });
 
   socket.on("disconnect", () => {
-    console.log("a user go out");
     onlineCount = (onlineCount < 0) ? 0 : onlineCount -= 1;
+    console.log(`A user go out, now ${onlineCount} online`);
 
   });
 

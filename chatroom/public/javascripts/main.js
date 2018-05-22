@@ -12,6 +12,17 @@ signInButton.addEventListener("click", () => {
     chatroomContainer.style.display = "flex";
 });
 
+socket.on('newConnect', (obj) => {
+    console.log(obj);
+});
+
 socket.on('message', (obj) => {
     console.log(obj);
 });
+
+let data = {
+    name: 'Robby',
+    msg: 'Hi~',
+};
+
+socket.emit('message', data);
