@@ -71,7 +71,7 @@ io.on('connection', async (socket) => {
 
   socket.on('userLogIn', (userName, friendList) => {
     friendStatus = friendList;
-    console.log('message: ' + userName);
+    console.log(userName + ' just send a message!');
     socket.emit("renderFriendList", friendStatus);
   });
 
@@ -79,20 +79,14 @@ io.on('connection', async (socket) => {
     io.to(socketid).emit('history', history);
   });
 
-  socket.on("disconnect", (userName, friendList) => {
+  socket.on("disconnect", () => {
     onlineCount = (onlineCount < 0) ? 0 : onlineCount -= 1;
-    console.log(`A user go out, now ${onlineCount} online`);
-    console.log(userName);
+    console.log(`A user disconnect, now ${onlineCount} online`);
   });
 
 });
 
 server.listen(3001);
-
-
-
-
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -124,7 +118,5 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-
-
 
 module.exports = app;
