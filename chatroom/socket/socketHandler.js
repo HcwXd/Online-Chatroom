@@ -20,7 +20,8 @@ class SocketHander {
 
         console.log(data);
         const newMessages = new Messages({
-            name: data.name,
+            fromName: data.fromName,
+            toName: data.toName,
             msg: data.msg,
             time: moment().valueOf(),
         });

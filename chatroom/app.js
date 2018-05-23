@@ -70,10 +70,14 @@ io.on('connection', async (socket) => {
     socket.emit("renderFriendList", friendStatus);
   });
 
-  socket.on("disconnect", () => {
+  socket.on('loadHistory', (userName, chatName) => {
+    io.to(socketid).emit('history', history);
+  });
+
+  socket.on("disconnect", (userName, friendList) => {
     onlineCount = (onlineCount < 0) ? 0 : onlineCount -= 1;
     console.log(`A user go out, now ${onlineCount} online`);
-
+    console.log(userName);
   });
 
 });

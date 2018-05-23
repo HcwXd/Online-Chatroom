@@ -1,12 +1,11 @@
 var socket = io();
 
 const signInContainer = document.querySelector(".signin-background");
-const usernameInput = document.querySelector(".username-input");
-const passwordInput = document.querySelector(".password-input");
-const signInButton = document.querySelector(".signin-button");
-const sendButton = document.querySelector(".send-button");
+
 
 const chatroomContainer = document.querySelector(".chatroom-container");
+const signInButton = document.querySelector(".signin-button");
+
 
 var friendList = [];
 var userName = "";
@@ -42,11 +41,16 @@ signInButton.addEventListener("click", () => {
 
 setInterval(() => {
     if (startPolling) {
-
         renderFriend(friendList, userName);
         console.log("update!")
+        var contact = document.querySelectorAll(".contact");
+        contact.forEach((element) => {
+            element.addEventListener("click", renderChatContent)
+        });
     }
 }, 2000);
+
+
 
 
 socket.on('renderFriendList', obj => {
@@ -59,6 +63,7 @@ socket.on('newConnect', (obj) => {
 });
 
 socket.on('history', (obj) => {
+    console.log(obj);
     if (obj.length > 0) {
         appendData(obj);
     }
@@ -66,28 +71,91 @@ socket.on('history', (obj) => {
 
 socket.on('message', (obj) => {
     console.log(obj);
-    // appendData([obj]);
+    appendData([obj]);
 });
+
+function renderChatContent() {
+    var chatName = this.firstElementChild.nextElementSibling.innerHTML;
+    console.log(chatName);
+
+    var chatIndex = friendList.findIndex((element) => {
+        return element.name === chatName;
+    })
+    // friendList[chatIndex].status = "active";
+
+    let chatroomHTML = '';
+    chatroomHTML +=
+        `
+        <div class="chat-header">
+            <div class="chat-name">${chatName}</div>
+        `;
+    if (friendList[chatIndex].status === "active") {
+        chatroomHTML +=
+            `
+                <div class="chat-status">● | active</div>
+            </div>
+            <div class="chat-content-list">
+            </div>
+            `;
+    } else {
+        chatroomHTML +=
+            `
+                <div class="chat-status chat-away">● | away</div>
+            </div>
+            <div class="chat-content-list">
+            </div>
+            `;
+    }
+
+
+
+    chatroomHTML +=
+        `
+            <div class="send-box">
+                <input class="send-content" type="text" placeholder="message @ ..." />
+                <button class="send-button">></button>
+            </div>
+        `;
+    const contentContainer = document.querySelector(".content-container");
+    contentContainer.innerHTML = chatroomHTML.trim();
+
+    socket.emit('loadHistory', userName, chatName);
+
+
+    const usernameInput = document.querySelector(".username-input");
+    const passwordInput = document.querySelector(".password-input");
+    const sendButton = document.querySelector(".send-button");
+    sendButton.addEventListener('click', () => {
+        Send();
+    });
+}
 
 function appendData(obj) {
 
     let chatContentList = document.querySelector('.chat-content-list');
     let html = chatContentList.innerHTML;
+    let chatName = document.querySelector(".chat-name").innerHTML;
+
+
 
     obj.forEach(element => {
-        html +=
-            `
+        if ((element.fromName === userName && element.toName === chatName) || (element.fromName === chatName && element.toName === userName)) {
+            html +=
+                `
             <div class="msg-item">
                 <img class="msg-pic" src="http://icons.iconarchive.com/icons/iconsmind/outline/512/Cat-icon.png" />
                 <div class="msg-row">
                     <div class="msg-header">
-                        <div class="msg-name">${element.name}</div>
+                        <div class="msg-name">${element.fromName}</div>
                         <div class="msg-time">${moment(element.time).fromNow()}</div>
                     </div>
                     <div class="msg-content">${element.msg}</div>
                 </div>
             </div>
             `;
+
+        }
+
     });
     chatContentList.innerHTML = html.trim();
     scrollWindow();
@@ -146,20 +214,20 @@ function renderFriend(obj, userName) {
 
 }
 
-sendButton.addEventListener('click', () => {
-    Send();
-});
+
 
 function Send() {
 
-    let name = "David Hu";
+    let fromName = userName;
+    let toName = document.querySelector(".chat-name").innerHTML;
     let msg = document.querySelector('.send-content').value;
-    if (!msg && !name) {
-        alert('請輸入大名和訊息');
+    if (!msg) {
+        alert('請輸入訊息');
         return;
     }
     let data = {
-        name: name,
+        fromName: fromName,
+        toName: toName,
         msg: msg,
     };
     socket.emit('message', data);
