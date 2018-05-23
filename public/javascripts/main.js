@@ -70,7 +70,6 @@ socket.on('newConnect', (obj) => {
 });
 
 socket.on('history', (obj) => {
-
     if (obj.length > 0) {
         appendData(obj);
     }
@@ -106,8 +105,6 @@ function renderSlackbotOpening() {
 
     socket.emit('loadHistory', userName, chatName);
 
-    var usernameInput = document.querySelector(".username-input");
-    var passwordInput = document.querySelector(".password-input");
     var sendButton = document.querySelector(".send-button");
     sendButton.addEventListener('click', () => {
         Send();
@@ -163,8 +160,6 @@ function renderChatContent() {
 
     socket.emit('loadHistory', userName, chatName);
 
-    var usernameInput = document.querySelector(".username-input");
-    var passwordInput = document.querySelector(".password-input");
     var sendButton = document.querySelector(".send-button");
     sendButton.addEventListener('click', () => {
         Send();
@@ -248,7 +243,10 @@ function renderFriend(obj, userName) {
         }
     });
     friendList.innerHTML = friendHtml;
-    // friendList.innerHTML = html.trim();
+    var contact = document.querySelectorAll(".contact");
+    contact.forEach((element) => {
+        element.addEventListener("click", renderChatContent)
+    });
 
 }
 
