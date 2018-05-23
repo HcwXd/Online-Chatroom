@@ -8,7 +8,7 @@ class SocketHander {
     }
 
     connect() {
-        this.db = mongoose.connect(`mongodb://localhost:27017/nchat`);
+        this.db = mongoose.connect(`mongodb://Test:Test123@ds231720.mlab.com:31720/chatroom_db`);
         this.db.Promise = global.Promise;
     }
 
