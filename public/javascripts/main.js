@@ -24,11 +24,10 @@ signInButton.addEventListener("click", () => {
     } else {
         signInContainer.style.display = "none";
         chatroomContainer.style.display = "flex";
-        // console.log(userName);
+
         document.querySelector('.users-name').innerHTML = userName;
         if (friendList.length > 0) {
             renderFriend(friendList, userName);
-            // console.log("render!");
         }
         var userIndex = friendList.findIndex((element) => {
             return element.name === userName;
@@ -36,53 +35,54 @@ signInButton.addEventListener("click", () => {
         friendList[userIndex].status = "active";
         socket.emit('userLogIn', userName, friendList);
         startPolling = true;
+        var contact = document.querySelectorAll(".contact");
+        contact.forEach((element) => {
+            element.addEventListener("click", renderChatContent)
+        });
         renderSlackbotOpening();
 
     }
 });
 
-setInterval(() => {
-    if (startPolling) {
-        socket.emit('userLogIn', userName, friendList);
-        socket.emit('updateFriendsStatus', userName, friendList);
-        renderFriend(friendList, userName);
-        // console.log("update!")
-        var contact = document.querySelectorAll(".contact");
-        contact.forEach((element) => {
-            element.addEventListener("click", renderChatContent)
-        });
-    }
-}, 2000);
+// setInterval(() => {
+//     if (startPolling) {
+//         socket.emit('userLogIn', userName, friendList);
+//         socket.emit('updateFriendsStatus', userName, friendList);
+//         renderFriend(friendList, userName);
+
+//         var contact = document.querySelectorAll(".contact");
+//         contact.forEach((element) => {
+//             element.addEventListener("click", renderChatContent)
+//         });
+//     }
+// }, 2000);
 
 
 
 
 socket.on('renderFriendList', obj => {
     friendList = obj;
-    // console.log(friendList);
+    renderFriend(friendList, userName);
 })
 
 socket.on('newConnect', (obj) => {
-    // console.log(obj);
+
 });
 
 socket.on('history', (obj) => {
-    // console.log(obj);
+
     if (obj.length > 0) {
         appendData(obj);
     }
 });
 
 socket.on('message', (obj) => {
-    // console.log(obj);
     appendData([obj]);
 });
 
 
 function renderSlackbotOpening() {
     var chatName = "slackbot";
-    // console.log(chatName);
-
     var chatIndex = friendList.findIndex((element) => {
         return element.name === chatName;
     })
@@ -121,7 +121,7 @@ function renderSlackbotOpening() {
 
 function renderChatContent() {
     var chatName = this.firstElementChild.nextElementSibling.innerHTML;
-    // console.log(chatName);
+
 
     var chatIndex = friendList.findIndex((element) => {
         return element.name === chatName;
@@ -151,8 +151,6 @@ function renderChatContent() {
             `;
     }
 
-
-
     chatroomHTML +=
         `
             <div class="send-box">
@@ -165,7 +163,6 @@ function renderChatContent() {
 
     socket.emit('loadHistory', userName, chatName);
 
-
     var usernameInput = document.querySelector(".username-input");
     var passwordInput = document.querySelector(".password-input");
     var sendButton = document.querySelector(".send-button");
@@ -175,12 +172,9 @@ function renderChatContent() {
 }
 
 function appendData(obj) {
-
     let chatContentList = document.querySelector('.chat-content-list');
     let html = chatContentList.innerHTML;
     let chatName = document.querySelector(".chat-name").innerHTML;
-
-
 
     obj.forEach(element => {
         if ((element.fromName === userName && element.toName === chatName) || (element.fromName === chatName && element.toName === userName)) {

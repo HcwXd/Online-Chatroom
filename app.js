@@ -71,7 +71,7 @@ io.on('connection', async (socket) => {
 
   socket.on('userLogIn', (userName, friendList) => {
     friendStatus = friendList;
-    socket.emit("renderFriendList", friendStatus);
+    socket.broadcast.emit("renderFriendList", friendStatus);
   });
 
   socket.on('updateFriendsStatus', (userName, friendList) => {
