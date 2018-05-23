@@ -20,15 +20,15 @@ signInButton.addEventListener("click", () => {
     if (!userName) {
         alert('Please Enter username');
     } else if (!exist) {
-        alert('Andy Tsia, Kevin Huang, Steve Jobs, David Hu, Mark Lee is available now');
+        alert('Sorry! Only Andy Tsia, Kevin Huang, Steve Jobs, David Hu, Mark Lee are available now');
     } else {
         signInContainer.style.display = "none";
         chatroomContainer.style.display = "flex";
-        console.log(userName);
+        // console.log(userName);
         document.querySelector('.users-name').innerHTML = userName;
         if (friendList.length > 0) {
             renderFriend(friendList, userName);
-            console.log("render!");
+            // console.log("render!");
         }
         var userIndex = friendList.findIndex((element) => {
             return element.name === userName;
@@ -44,7 +44,7 @@ signInButton.addEventListener("click", () => {
 setInterval(() => {
     if (startPolling) {
         renderFriend(friendList, userName);
-        console.log("update!")
+        // console.log("update!")
         var contact = document.querySelectorAll(".contact");
         contact.forEach((element) => {
             element.addEventListener("click", renderChatContent)
@@ -57,29 +57,29 @@ setInterval(() => {
 
 socket.on('renderFriendList', obj => {
     friendList = obj;
-    console.log(friendList);
+    // console.log(friendList);
 })
 
 socket.on('newConnect', (obj) => {
-    console.log(obj);
+    // console.log(obj);
 });
 
 socket.on('history', (obj) => {
-    console.log(obj);
+    // console.log(obj);
     if (obj.length > 0) {
         appendData(obj);
     }
 });
 
 socket.on('message', (obj) => {
-    console.log(obj);
+    // console.log(obj);
     appendData([obj]);
 });
 
 
 function renderSlackbotOpening() {
     var chatName = "slackbot";
-    console.log(chatName);
+    // console.log(chatName);
 
     var chatIndex = friendList.findIndex((element) => {
         return element.name === chatName;
@@ -119,7 +119,7 @@ function renderSlackbotOpening() {
 
 function renderChatContent() {
     var chatName = this.firstElementChild.nextElementSibling.innerHTML;
-    console.log(chatName);
+    // console.log(chatName);
 
     var chatIndex = friendList.findIndex((element) => {
         return element.name === chatName;
