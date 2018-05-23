@@ -43,6 +43,8 @@ signInButton.addEventListener("click", () => {
 
 setInterval(() => {
     if (startPolling) {
+        socket.emit('userLogIn', userName, friendList);
+        socket.emit('updateFriendsStatus', userName, friendList);
         renderFriend(friendList, userName);
         // console.log("update!")
         var contact = document.querySelectorAll(".contact");
