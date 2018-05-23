@@ -15,6 +15,11 @@ const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
 var friendStatus = [{
+    name: "slackbot",
+    status: "active",
+    notification: 0
+  },
+  {
     name: "Andy Tsia",
     status: "away",
     notification: 0

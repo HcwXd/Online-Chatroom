@@ -36,6 +36,8 @@ signInButton.addEventListener("click", () => {
         friendList[userIndex].status = "active";
         socket.emit('userLogIn', userName, friendList);
         startPolling = true;
+        renderSlackbotOpening();
+
     }
 });
 
@@ -74,6 +76,47 @@ socket.on('message', (obj) => {
     appendData([obj]);
 });
 
+
+function renderSlackbotOpening() {
+    var chatName = "slackbot";
+    console.log(chatName);
+
+    var chatIndex = friendList.findIndex((element) => {
+        return element.name === chatName;
+    })
+
+    let chatroomHTML = '';
+    chatroomHTML +=
+        `
+        <div class="chat-header">
+            <div class="chat-name">${chatName}</div>
+            <div class="chat-status">● | active</div>
+        </div>
+        <div class="chat-content-list">
+        </div>
+        <div class="send-box">
+            <input class="send-content" type="text" placeholder="message @ ..." />
+            <button class="send-button">></button>
+        </div>
+        `;
+    const contentContainer = document.querySelector(".content-container");
+    contentContainer.innerHTML = chatroomHTML.trim();
+
+    socket.emit('loadHistory', userName, chatName);
+
+    var usernameInput = document.querySelector(".username-input");
+    var passwordInput = document.querySelector(".password-input");
+    var sendButton = document.querySelector(".send-button");
+    sendButton.addEventListener('click', () => {
+        Send();
+    });
+}
+
+
+
+
+
+
 function renderChatContent() {
     var chatName = this.firstElementChild.nextElementSibling.innerHTML;
     console.log(chatName);
@@ -81,7 +124,6 @@ function renderChatContent() {
     var chatIndex = friendList.findIndex((element) => {
         return element.name === chatName;
     })
-    // friendList[chatIndex].status = "active";
 
     let chatroomHTML = '';
     chatroomHTML +=
@@ -122,9 +164,9 @@ function renderChatContent() {
     socket.emit('loadHistory', userName, chatName);
 
 
-    const usernameInput = document.querySelector(".username-input");
-    const passwordInput = document.querySelector(".password-input");
-    const sendButton = document.querySelector(".send-button");
+    var usernameInput = document.querySelector(".username-input");
+    var passwordInput = document.querySelector(".password-input");
+    var sendButton = document.querySelector(".send-button");
     sendButton.addEventListener('click', () => {
         Send();
     });
@@ -178,7 +220,7 @@ function renderFriend(obj, userName) {
             `;
 
     obj.forEach(element => {
-        if (element.name !== userName) {
+        if (element.name !== userName && element.name !== "slackbot") {
             if (element.status === "active") {
                 friendHtml +=
                     `
@@ -213,6 +255,11 @@ function renderFriend(obj, userName) {
     // friendList.innerHTML = html.trim();
 
 }
+
+var sendButton = document.querySelector(".send-button");
+sendButton.addEventListener('click', () => {
+    Send();
+});
 
 
 
