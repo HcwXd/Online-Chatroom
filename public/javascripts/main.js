@@ -1,73 +1,51 @@
 var socket = io();
-
-const signInContainer = document.querySelector(".signin-background");
-
-
-const chatroomContainer = document.querySelector(".chatroom-container");
-const signInButton = document.querySelector(".signin-button");
-
-
 var friendList = [];
 var userName = "";
-var startPolling = false;
+
+const signInButton = document.querySelector(".signin-button");
 
 signInButton.addEventListener("click", () => {
     userName = document.querySelector('.username-input').value;
-    var exist = friendList.find((element) => {
+    var isUserNameExist = friendList.find((element) => {
         return element.name === userName;
     });
 
     if (!userName) {
         alert('Please Enter username');
-    } else if (!exist) {
+    } else if (!isUserNameExist) {
         alert('Sorry! Only Andy Tsia, Kevin Huang, Steve Jobs, David Hu, Mark Lee are available now');
     } else {
+        const signInContainer = document.querySelector(".signin-background");
         signInContainer.style.display = "none";
+
+        const chatroomContainer = document.querySelector(".chatroom-container");
         chatroomContainer.style.display = "flex";
 
         document.querySelector('.users-name').innerHTML = userName;
-        if (friendList.length > 0) {
-            renderFriend(friendList, userName);
-        }
+
         var userIndex = friendList.findIndex((element) => {
             return element.name === userName;
         })
         friendList[userIndex].status = "active";
-        socket.emit('userLogIn', userName, friendList);
-        startPolling = true;
+
+        socket.emit('updateFriendStatus', userName, friendList);
+
         var contact = document.querySelectorAll(".contact");
         contact.forEach((element) => {
             element.addEventListener("click", renderChatContent)
         });
+
         renderSlackbotOpening();
 
     }
 });
 
-// setInterval(() => {
-//     if (startPolling) {
-//         socket.emit('userLogIn', userName, friendList);
-//         socket.emit('updateFriendsStatus', userName, friendList);
-//         renderFriend(friendList, userName);
-
-//         var contact = document.querySelectorAll(".contact");
-//         contact.forEach((element) => {
-//             element.addEventListener("click", renderChatContent)
-//         });
-//     }
-// }, 2000);
-
-
-
-
 socket.on('renderFriendList', obj => {
     friendList = obj;
-    renderFriend(friendList, userName);
+    if (friendList.length > 0) {
+        renderFriend(friendList, userName);
+    }
 })
-
-socket.on('newConnect', (obj) => {
-
-});
 
 socket.on('history', (obj) => {
     if (obj.length > 0) {
@@ -111,25 +89,20 @@ function renderSlackbotOpening() {
     });
 }
 
-
-
-
-
-
 function renderChatContent() {
     var chatName = this.firstElementChild.nextElementSibling.innerHTML;
-
 
     var chatIndex = friendList.findIndex((element) => {
         return element.name === chatName;
     })
 
-    let chatroomHTML = '';
+    var chatroomHTML = '';
     chatroomHTML +=
         `
         <div class="chat-header">
             <div class="chat-name">${chatName}</div>
         `;
+
     if (friendList[chatIndex].status === "active") {
         chatroomHTML +=
             `
@@ -155,6 +128,7 @@ function renderChatContent() {
                 <button class="send-button">></button>
             </div>
         `;
+
     const contentContainer = document.querySelector(".content-container");
     contentContainer.innerHTML = chatroomHTML.trim();
 
@@ -168,12 +142,12 @@ function renderChatContent() {
 
 function appendData(obj) {
     let chatContentList = document.querySelector('.chat-content-list');
-    let html = chatContentList.innerHTML;
+    let chatContentHtml = chatContentList.innerHTML;
     let chatName = document.querySelector(".chat-name").innerHTML;
 
     obj.forEach(element => {
         if ((element.fromName === userName && element.toName === chatName) || (element.fromName === chatName && element.toName === userName)) {
-            html +=
+            chatContentHtml +=
                 `
             <div class="msg-item">
                 <img class="msg-pic" src="http://icons.iconarchive.com/icons/iconsmind/outline/512/Cat-icon.png" />
@@ -190,7 +164,7 @@ function appendData(obj) {
         }
 
     });
-    chatContentList.innerHTML = html.trim();
+    chatContentList.innerHTML = chatContentHtml.trim();
     scrollWindow();
 }
 

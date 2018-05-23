@@ -52,8 +52,6 @@ io.on('connection', async (socket) => {
   onlineCount++;
   console.log(`A user connected, now ${onlineCount} online`);
 
-  io.emit("newConnect", `Now ${onlineCount} online`);
-
   socket.emit("renderFriendList", friendStatus);
 
   socketHander = new SocketHander();
@@ -70,7 +68,7 @@ io.on('connection', async (socket) => {
     io.emit("message", obj);
   });
 
-  socket.on('userLogIn', (userName, friendList) => {
+  socket.on('updateFriendStatus', (userName, friendList) => {
     serverUserName = userName;
     friendStatus = friendList;
     socket.broadcast.emit("renderFriendList", friendStatus);
@@ -91,7 +89,7 @@ io.on('connection', async (socket) => {
     var userIndex = friendStatus.findIndex((element) => {
       return element.name === serverUserName;
     })
-    if (userIndex) {
+    if (userIndex >= 0) {
       console.log(userIndex);
       friendStatus[userIndex].status = "away";
     }
