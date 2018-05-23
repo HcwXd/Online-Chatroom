@@ -1,5 +1,6 @@
 const Messages = require('../models/Messages');
 const moment = require('moment');
+const mongoose = require('mongoose');
 class SocketHander {
 
     constructor() {
@@ -7,7 +8,7 @@ class SocketHander {
     }
 
     connect() {
-        this.db = require('mongoose').connect('mongodb://localhost:27017/chat');
+        this.db = mongoose.connect(`mongodb://localhost:27017/nchat`);
         this.db.Promise = global.Promise;
     }
 

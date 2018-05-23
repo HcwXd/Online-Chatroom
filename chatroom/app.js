@@ -14,9 +14,11 @@ var app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
+
+
 let onlineCount = 0;
 
-io.on('connection', (socket) => {
+io.on('connection', async (socket) => {
   onlineCount++;
   console.log(`A user connected, now ${onlineCount} online`);
 
@@ -27,6 +29,11 @@ io.on('connection', (socket) => {
   socketHander = new SocketHander();
 
   socketHander.connect();
+
+  const history = await socketHander.getMessages();
+
+  const socketid = socket.id;
+  io.to(socketid).emit('history', history);
 
   socket.on("message", (obj) => {
     socketHander.storeMessages(obj);
