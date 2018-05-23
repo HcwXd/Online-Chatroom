@@ -14,7 +14,31 @@ var app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
-
+var friendStatus = [{
+    name: "Andy Tsia",
+    status: "away",
+    notification: 0
+  }, {
+    name: "Kevin Huang",
+    status: "away",
+    notification: 0
+  },
+  {
+    name: "Steve Jobs",
+    status: "away",
+    notification: 0
+  },
+  {
+    name: "David Hu",
+    status: "away",
+    notification: 0
+  },
+  {
+    name: "Mark Lee",
+    status: "away",
+    notification: 0
+  }
+];
 
 let onlineCount = 0;
 
@@ -24,7 +48,7 @@ io.on('connection', async (socket) => {
 
   io.emit("newConnect", `Now ${onlineCount} online`);
 
-  io.emit("")
+  socket.emit("renderFriendList", friendStatus);
 
   socketHander = new SocketHander();
 
@@ -38,6 +62,10 @@ io.on('connection', async (socket) => {
   socket.on("message", (obj) => {
     socketHander.storeMessages(obj);
     io.emit("message", obj);
+  });
+
+  socket.on('userLogIn', (userName) => {
+    console.log('message: ' + userName);
   });
 
   socket.on("disconnect", () => {

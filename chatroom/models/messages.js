@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 
 const messagesSchema = mongoose.Schema({
-    name: String,
+    fromName: String,
+    toName: String,
     msg: String,
     time: Number,
 });

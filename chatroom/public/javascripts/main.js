@@ -8,10 +8,37 @@ const sendButton = document.querySelector(".send-button");
 
 const chatroomContainer = document.querySelector(".chatroom-container");
 
+var friendList = [];
+var userName = "";
+
 signInButton.addEventListener("click", () => {
-    signInContainer.style.display = "none";
-    chatroomContainer.style.display = "flex";
+    userName = document.querySelector('.username-input').value;
+    var exist = friendList.find((element) => {
+        return element.name === userName;
+    });
+
+    if (!userName) {
+        alert('Please Enter username');
+    } else if (!exist) {
+        alert('Andy Tsia, Kevin Huang, Steve Jobs, David Hu, Mark Lee is available now');
+    } else {
+        signInContainer.style.display = "none";
+        chatroomContainer.style.display = "flex";
+        console.log(userName);
+        document.querySelector('.users-name').innerHTML = userName;
+        if (friendList.length > 0) {
+            renderFriend(friendList, userName);
+            console.log("render!");
+        }
+        socket.emit('userLogIn', userName);
+    }
 });
+
+
+socket.on('renderFriendList', obj => {
+    friendList = obj;
+    console.log(friendList);
+})
 
 socket.on('newConnect', (obj) => {
     console.log(obj);
@@ -25,7 +52,7 @@ socket.on('history', (obj) => {
 
 socket.on('message', (obj) => {
     console.log(obj);
-    appendData([obj]);
+    // appendData([obj]);
 });
 
 function appendData(obj) {
@@ -50,6 +77,59 @@ function appendData(obj) {
     });
     chatContentList.innerHTML = html.trim();
     scrollWindow();
+}
+
+function renderFriend(obj, userName) {
+    let friendList = document.querySelector('.dm-contact-list');
+    let friendHtml = '';
+    friendHtml +=
+        `
+                <div class="header">Direct Message</div>
+                <div class="contact">
+                    <div class="status">♥</div>
+                    <div class="name">slackbot</div>
+                </div>
+                <div class="contact">
+                    <div class="status">●</div>
+                    <div class="name">${userName}</div>
+                </div>
+            `;
+
+    obj.forEach(element => {
+        if (element.name !== userName) {
+            if (element.status === "active") {
+                friendHtml +=
+                    `
+                    <div class="contact">
+                    `;
+            } else {
+                friendHtml +=
+                    `
+                    <div class="contact inactive">
+                    `;
+            }
+            friendHtml +=
+                `         
+                    <div class="status">●</div>
+                    <div class="name">${element.name}</div>
+                `;
+            if (element.notification > 0) {
+                friendHtml +=
+                    `
+                        <div class="notification">${element.notification}</div>
+                    </div>
+                    `;
+            } else {
+                friendHtml +=
+                    `
+                    </div>
+                    `;
+            }
+        }
+    });
+    friendList.innerHTML = friendHtml;
+    // friendList.innerHTML = html.trim();
+
 }
 
 sendButton.addEventListener('click', () => {
