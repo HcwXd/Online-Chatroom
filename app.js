@@ -48,6 +48,7 @@ var friendStatus = [{
 let onlineCount = 0;
 
 io.on('connection', async (socket) => {
+  var serverUserName = "";
   onlineCount++;
   console.log(`A user connected, now ${onlineCount} online`);
 
@@ -70,6 +71,7 @@ io.on('connection', async (socket) => {
   });
 
   socket.on('userLogIn', (userName, friendList) => {
+    serverUserName = userName;
     friendStatus = friendList;
     socket.broadcast.emit("renderFriendList", friendStatus);
   });
@@ -85,6 +87,17 @@ io.on('connection', async (socket) => {
   socket.on("disconnect", () => {
     onlineCount = (onlineCount < 0) ? 0 : onlineCount -= 1;
     console.log(`A user disconnect, now ${onlineCount} online`);
+
+    var userIndex = friendStatus.findIndex((element) => {
+      return element.name === serverUserName;
+    })
+    if (userIndex) {
+      console.log(userIndex);
+      friendStatus[userIndex].status = "away";
+    }
+    socket.broadcast.emit("renderFriendList", friendStatus);
+    console.log(serverUserName);
+
   });
 
 });
