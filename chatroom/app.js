@@ -64,8 +64,10 @@ io.on('connection', async (socket) => {
     io.emit("message", obj);
   });
 
-  socket.on('userLogIn', (userName) => {
+  socket.on('userLogIn', (userName, friendList) => {
+    friendStatus = friendList;
     console.log('message: ' + userName);
+    socket.emit("renderFriendList", friendStatus);
   });
 
   socket.on("disconnect", () => {

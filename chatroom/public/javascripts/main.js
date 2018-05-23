@@ -10,6 +10,7 @@ const chatroomContainer = document.querySelector(".chatroom-container");
 
 var friendList = [];
 var userName = "";
+var startPolling = false;
 
 signInButton.addEventListener("click", () => {
     userName = document.querySelector('.username-input').value;
@@ -30,9 +31,22 @@ signInButton.addEventListener("click", () => {
             renderFriend(friendList, userName);
             console.log("render!");
         }
-        socket.emit('userLogIn', userName);
+        var userIndex = friendList.findIndex((element) => {
+            return element.name === userName;
+        })
+        friendList[userIndex].status = "active";
+        socket.emit('userLogIn', userName, friendList);
+        startPolling = true;
     }
 });
+
+setInterval(() => {
+    if (startPolling) {
+
+        renderFriend(friendList, userName);
+        console.log("update!")
+    }
+}, 2000);
 
 
 socket.on('renderFriendList', obj => {
