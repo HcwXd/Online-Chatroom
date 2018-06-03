@@ -26,7 +26,10 @@ signInButton.addEventListener("click", () => {
         var userIndex = friendList.findIndex((element) => {
             return element.name === userName;
         })
+
         friendList[userIndex].status = "active";
+
+        renderFriend(friendList, userName);
 
         socket.emit('updateFriendStatus', userName, friendList);
 
@@ -41,6 +44,7 @@ signInButton.addEventListener("click", () => {
 });
 
 socket.on('renderFriendList', obj => {
+    console.log("socketCallRenderFriend")
     friendList = obj;
     if (friendList.length > 0) {
         renderFriend(friendList, userName);
@@ -56,6 +60,24 @@ socket.on('history', (obj) => {
 socket.on('message', (obj) => {
     appendData([obj]);
 });
+
+socket.on('notification', (obj) => {
+    if (obj.toName === userName) {
+        var contact = Array.from(document.querySelectorAll(".contact"));
+        var fromNameIndex = contact.findIndex((element) => {
+            return element.firstElementChild.nextElementSibling.innerHTML === obj.fromName;
+        });
+
+        var notiHTML = document.createElement("DIV");
+        notiHTML.className = "notification";
+        notiHTML.innerHTML = "!";
+        contact[fromNameIndex].appendChild(notiHTML);
+        console.log(contact[fromNameIndex]);
+
+        console.log(notiHTML);
+
+    }
+})
 
 
 function renderSlackbotOpening() {
@@ -132,12 +154,12 @@ function renderChatContent() {
     const contentContainer = document.querySelector(".content-container");
     contentContainer.innerHTML = chatroomHTML.trim();
 
-    socket.emit('loadHistory', userName, chatName);
-
     var sendButton = document.querySelector(".send-button");
     sendButton.addEventListener('click', () => {
         Send();
     });
+
+    socket.emit('loadHistory', userName, chatName);
 }
 
 function appendData(obj) {
@@ -161,7 +183,7 @@ function appendData(obj) {
             </div>
             `;
 
-        }
+        };
 
     });
     chatContentList.innerHTML = chatContentHtml.trim();
@@ -169,8 +191,11 @@ function appendData(obj) {
 }
 
 function renderFriend(obj, userName) {
+    console.log("renderFriend");
+
     let friendList = document.querySelector('.dm-contact-list');
     let friendHtml = '';
+
     friendHtml +=
         `
                 <div class="header">Direct Message</div>
@@ -182,7 +207,7 @@ function renderFriend(obj, userName) {
                     <div class="status">●</div>
                     <div class="name">${userName}</div>
                 </div>
-            `;
+        `;
 
     obj.forEach(element => {
         if (element.name !== userName && element.name !== "slackbot") {
@@ -205,7 +230,7 @@ function renderFriend(obj, userName) {
             if (element.notification > 0) {
                 friendHtml +=
                     `
-                        <div class="notification">${element.notification}</div>
+                        <div class="notification">!</div>
                     </div>
                     `;
             } else {
@@ -221,7 +246,6 @@ function renderFriend(obj, userName) {
     contact.forEach((element) => {
         element.addEventListener("click", renderChatContent)
     });
-
 }
 
 var sendButton = document.querySelector(".send-button");
@@ -232,7 +256,6 @@ sendButton.addEventListener('click', () => {
 
 
 function Send() {
-
     let fromName = userName;
     let toName = document.querySelector(".chat-name").innerHTML;
     let msg = document.querySelector('.send-content').value;

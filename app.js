@@ -58,12 +58,13 @@ io.on('connection', async (socket) => {
 
   socketHander.connect();
 
-  const history = await socketHander.getMessages();
+  var history = await socketHander.getMessages();
 
   const socketid = socket.id;
   io.to(socketid).emit('history', history);
 
   socket.on("message", (obj) => {
+    // socket.broadcast.emit("notification", obj);
     socketHander.storeMessages(obj);
     io.emit("message", obj);
   });
@@ -78,7 +79,8 @@ io.on('connection', async (socket) => {
     socket.emit("renderFriendList", friendStatus);
   });
 
-  socket.on('loadHistory', (userName, chatName) => {
+  socket.on('loadHistory', async (userName, chatName) => {
+    history = await socketHander.getMessages();
     io.to(socketid).emit('history', history);
   });
 
@@ -94,8 +96,7 @@ io.on('connection', async (socket) => {
       friendStatus[userIndex].status = "away";
     }
     socket.broadcast.emit("renderFriendList", friendStatus);
-    console.log(serverUserName);
-
+    // console.log(serverUserName);
   });
 
 });

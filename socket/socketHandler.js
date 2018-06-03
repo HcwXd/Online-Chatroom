@@ -1,4 +1,4 @@
-const Messages = require('../models/Messages');
+const Messages = require('../models/messages');
 const moment = require('moment');
 const mongoose = require('mongoose');
 class SocketHander {
