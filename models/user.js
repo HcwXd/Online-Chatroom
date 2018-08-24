@@ -7,4 +7,4 @@ const userSchema = new Schema({
     isOnline: { type: Boolean, default: false },
 });
 
-module.export = mongoose.model('users', userSchema);
+mongoose.model('users', userSchema);
