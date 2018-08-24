@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Slack</title>
+
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/locale/zh-tw.js'></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io();
+  </script>
+
+</head>
+
+<body>
+  <%- include('components/notification') %>
+    <a href="/signin" class="route-btn">Sign In</a>
+    <div class="signin-background">
+      <div class="signin-container">
+        <h1 class="signin-headers">Sign up to Web_Class chatroom</h1>
+        <form class="signin-card" method="post" enctype="multipart/form-data">
+          <p class="signin-hint">Please enter your
+            <strong>username</strong> and
+            <strong>password</strong>.</p>
+          <input class="username-input" placeholder="Username" type="text" name="username">
+          <input class="password-input" placeholder="Password" type="password" name="password">
+          <input type="submit" class="signin-button" value="Sign Up">
+        </form>
+      </div>
+    </div>
+    </div>
+
+
+</body>
+
+</html>

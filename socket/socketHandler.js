@@ -1,33 +1,48 @@
-const Messages = require('../models/messages');
 const moment = require('moment');
 const mongoose = require('mongoose');
-class SocketHander {
+const config = require('config-lite')(__dirname);
 
+require('../models/User');
+require('../models/Conversation');
+require('../models/Message');
+
+const Message = mongoose.model('messages');
+const Users = mongoose.model('users');
+const Conversations = mongoose.model('conversations');
+
+class SocketHandler {
     constructor() {
         this.db;
     }
 
     connect() {
-        this.db = mongoose.connect(`mongodb://Test:Test123@ds231720.mlab.com:31720/chatroom_db`);
+        this.db = mongoose.connect(config.mongodb);
         this.db.Promise = global.Promise;
     }
 
-    getMessages() {
-        return Messages.find();
+    getMessages(currentUsername, chatUsername) {
+        return Message.find({ $or: [{ fromName: currentUsername, toName: chatUsername }, { fromName: chatUsername, toName: currentUsername }] });
     }
 
-    storeMessages(data) {
+    getConversations(currentUsername, chatUsername) {
+        return Conversations.find({ member: { $all: [currentUsername, chatUsername] } });
+    }
 
-        console.log(data);
-        const newMessages = new Messages({
-            fromName: data.fromName,
-            toName: data.toName,
-            msg: data.msg,
+    getUsers() {
+        return Users.find();
+    }
+
+    storeMessages(fromName, toName, msg) {
+        const newMessages = new Message({
+            fromName,
+            toName,
+            msg,
             time: moment().valueOf(),
         });
 
         const doc = newMessages.save();
+        return doc;
     }
 }
 
-module.exports = SocketHander;
+module.exports = SocketHandler;

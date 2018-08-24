@@ -4,8 +4,6 @@
 
 
 
-![img](https://github.com/HcwXd/Online-Chatroom/blob/master/public/images/Chatroom_Screenshot.png?raw=true)
-
 ## Installation
 
 ```
@@ -21,16 +19,10 @@ $ npm install
 ```
 $ npm run start
 
-# demo page: http://localhost:3001/
+# demo page: http://localhost:3000/
 ```
 
 
-
-## Notice
-
-1. Now only several usernames are available: 
-   - Andy Tsia, Kevin Huang, Steve Jobs, David Hu, Mark Lee
-2. No need to use password
 
 
 

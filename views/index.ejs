@@ -6,75 +6,17 @@
   <title>Slack</title>
 
   <link rel='stylesheet' href='/stylesheets/style.css' />
-  <script src="/socket.io/socket.io.js"></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.js'></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/locale/zh-tw.js'></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io();
+  </script>
 
 </head>
 
 <body>
-  <div class="signin-background">
-    <div class="signin-container">
-      <h1 class="signin-headers">Sign in to Web_Class chatroom</h1>
-      <div class="signin-card">
-        <p class="signin-hint">Please enter your
-          <strong>username</strong> and
-          <strong>password</strong>.</p>
-        <input class="username-input" placeholder="username" />
-        <input class="password-input" placeholder="password" />
-        <button class="signin-button">Sign in</button>
-      </div>
-    </div>
-  </div>
-  <div class="chatroom-container">
-    <div class="channel-container">
-      <div class="users-profile">
-        <div class="team-name">Web_Class</div>
-        <div class="users-name">David Hu</div>
-      </div>
-      <div class="dm-contact-list">
-        <div class="header">Direct Message</div>
-        <div class="contact">
-          <div class="status">♥</div>
-          <div class="name">slackbot</div>
-        </div>
-        <div class="contact">
-          <div class="status">●</div>
-          <div class="name">David Hu</div>
-        </div>
-        <div class="contact inactive">
-          <div class="status">●</div>
-          <div class="name">Andy Tsia</div>
-        </div>
-        <div class="contact">
-          <div class="status">●</div>
-          <div class="name">Kevin Huang</div>
-          <div class="notification">2</div>
-        </div>
-        <div class="contact inactive">
-          <div class="status">●</div>
-          <div class="name">Steve Jobs</div>
-          <div class="notification">1</div>
-        </div>
-      </div>
-    </div>
-    <div class="content-container">
-      <div class="chat-header">
-        <div class="chat-name">slackbot</div>
-        <div class="chat-status">● | active</div>
-      </div>
-      <div class="chat-content-list">
-
-      </div>
-      <div class="send-box">
-        <input class="send-content" type="text" placeholder="message @ ..." />
-        <button class="send-button">></button>
-      </div>
-    </div>
-  </div>
   <script src="/javascripts/main.js"></script>
-
-
 </body>
 
 </html>

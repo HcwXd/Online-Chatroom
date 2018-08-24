@@ -1,107 +1,63 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-
-const SocketHander = require('./socket/socketHandler');
-
-var app = express();
-
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const config = require('config-lite')(__dirname);
+const routes = require('./routes');
+const SocketHandler = require('./socket/socketHandler');
+const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
+const port = process.env.PORT || config.port;
+const flash = require('connect-flash');
+const cookieSession = require('cookie-session');
 
-var friendStatus = [{
-    name: "slackbot",
-    status: "active",
-    notification: 0
-  },
-  {
-    name: "Andy Tsia",
-    status: "away",
-    notification: 0
-  }, {
-    name: "Kevin Huang",
-    status: "away",
-    notification: 0
-  },
-  {
-    name: "Steve Jobs",
-    status: "away",
-    notification: 0
-  },
-  {
-    name: "David Hu",
-    status: "away",
-    notification: 0
-  },
-  {
-    name: "Mark Lee",
-    status: "away",
-    notification: 0
-  }
-];
+require('./models/User');
+require('./models/Message');
+const mongoose = require('mongoose');
+const Users = mongoose.model('users');
 
-let onlineCount = 0;
+app.use(
+    cookieSession({
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+        keys: [config.cookieKey],
+    })
+);
 
 io.on('connection', async (socket) => {
-  var serverUserName = "";
-  onlineCount++;
-  console.log(`A user connected, now ${onlineCount} online`);
+    socketHandler = new SocketHandler();
+    socketHandler.connect();
 
-  socket.emit("renderFriendList", friendStatus);
+    let connectUsername;
+    socket.on('online', async (user) => {
+        connectUsername = user;
+        await Users.updateOne({ username: user }, { isOnline: true }).exec();
+        socket.broadcast.emit('updateUserInfo');
+    });
 
-  socketHander = new SocketHander();
+    socket.on('enterChatroom', async () => {
+        const user = await socketHandler.getUsers();
+        socket.emit('getUserInfo', user);
+    });
 
-  socketHander.connect();
+    socket.on('enterConversation', async (currentUsername, chatUsername) => {
+        const conversation = await socketHandler.getMessages(currentUsername, chatUsername);
+        socket.emit('getConversationInfo', conversation);
+    });
 
-  var history = await socketHander.getMessages();
+    socket.on('sendMessage', async (currentUsername, chatUsername, msgContent) => {
+        await socketHandler.storeMessages(currentUsername, chatUsername, msgContent);
 
-  const socketid = socket.id;
-  io.to(socketid).emit('history', history);
+        const conversation = await socketHandler.getMessages(currentUsername, chatUsername);
+        socket.emit('getConversationInfo', conversation);
+        socket.broadcast.emit('newMessage');
+    });
 
-  socket.on("message", (obj) => {
-    // socket.broadcast.emit("notification", obj);
-    socketHander.storeMessages(obj);
-    io.emit("message", obj);
-  });
-
-  socket.on('updateFriendStatus', (userName, friendList) => {
-    serverUserName = userName;
-    friendStatus = friendList;
-    socket.broadcast.emit("renderFriendList", friendStatus);
-  });
-
-  socket.on('updateFriendsStatus', (userName, friendList) => {
-    socket.emit("renderFriendList", friendStatus);
-  });
-
-  socket.on('loadHistory', async (userName, chatName) => {
-    history = await socketHander.getMessages();
-    io.to(socketid).emit('history', history);
-  });
-
-  socket.on("disconnect", () => {
-    onlineCount = (onlineCount < 0) ? 0 : onlineCount -= 1;
-    console.log(`A user disconnect, now ${onlineCount} online`);
-
-    var userIndex = friendStatus.findIndex((element) => {
-      return element.name === serverUserName;
-    })
-    if (userIndex >= 0) {
-      console.log(userIndex);
-      friendStatus[userIndex].status = "away";
-    }
-    socket.broadcast.emit("renderFriendList", friendStatus);
-    // console.log(serverUserName);
-  });
-
+    socket.on('disconnect', () => {
+        Users.updateOne({ username: connectUsername }, { isOnline: false }).exec();
+        socket.broadcast.emit('updateUserInfo');
+    });
 });
-
-server.listen(3001);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -109,29 +65,27 @@ app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({
-  extended: false
-}));
+app.use(
+    express.urlencoded({
+        extended: false,
+    })
+);
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use(flash());
+app.use(require('express-formidable')());
 
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  next(createError(404));
+// Add three required variables to the template
+app.use(function(req, res, next) {
+    res.locals.user = req.session.user;
+    res.locals.success = req.flash('success').toString();
+    res.locals.error = req.flash('error').toString();
+    next();
 });
 
-// error handler
-app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+routes(app);
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+server.listen(port, function() {
+    console.log(`listening on port ${port}`);
 });
-
-module.exports = app;

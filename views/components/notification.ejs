@@ -1,0 +1,17 @@
+<div class="noti-container">
+    <% if (success) { %>
+        <div class="success noti-message">
+            <p>
+                <%= success %>
+            </p>
+        </div>
+        <% } %>
+
+            <% if (error) { %>
+                <div class="error noti-message">
+                    <p>
+                        <%= error %>
+                    </p>
+                </div>
+                <% } %>
+</div>
