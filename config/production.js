@@ -1,3 +1,3 @@
 module.exports = {
-    mongodb: 'mongodb://Test:Test123@ds231720.mlab.com:31720/chatroom_db',
+    mongodb: 'mongodb://oc:ococ123@ds129762.mlab.com:29762/oc',
 };
