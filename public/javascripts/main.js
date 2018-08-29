@@ -1,27 +1,34 @@
 const currentUsername = document.querySelector('.users-name').textContent.trim();
-let currentChatUser = 'slackbot';
+let currentChatUsername = 'slackbot';
 const loader = document.querySelector('.loader');
 
+// Tell server this user is online, server will
+// 1. Update the status of this user in DB and
+// 2. Tell other online users to update their contact status
 socket.emit('online', currentUsername);
-socket.emit('enterChatroom');
-socket.emit('enterConversation', currentUsername, currentChatUser);
+
+// Tell server to emit all user's status
+socket.emit('getUserInfo');
+
+// Tell server to emit the conversation with currentChatUser
+socket.emit('getConversationInfo', currentUsername, currentChatUsername);
 
 socket.on('getUserInfo', (socketOn_userInfo) => {
     loader.classList.add('loader_hide');
     renderUserInfo(socketOn_userInfo);
 });
 
-socket.on('updateUserInfo', () => {
-    socket.emit('enterChatroom');
-});
-
-socket.on('newMessage', () => {
-    socket.emit('enterConversation', currentUsername, currentChatUser);
-});
-
 socket.on('getConversationInfo', (socketOn_conversationInfo) => {
     loader.classList.add('loader_hide');
     renderConversation(socketOn_conversationInfo);
+});
+
+socket.on('updateUserInfo', () => {
+    socket.emit('getUserInfo');
+});
+
+socket.on('newMessage', () => {
+    socket.emit('getConversationInfo', currentUsername, currentChatUsername);
 });
 
 function renderUserInfo(userInfo) {
@@ -56,11 +63,11 @@ function returnSingleContactNode(username, isOnline) {
 function enterConversation() {
     loader.classList.remove('loader_hide');
     const chatUsername = this.querySelector('.name').textContent;
-    currentChatUser = chatUsername;
+    currentChatUsername = chatUsername;
     const isOnline = this.classList.contains('inactive') ? false : true;
     renderChatHeader(chatUsername, isOnline);
 
-    socket.emit('enterConversation', currentUsername, currentChatUser);
+    socket.emit('getConversationInfo', currentUsername, currentChatUsername);
 }
 
 function renderChatHeader(chatUsername, isOnline) {
@@ -75,7 +82,7 @@ function renderChatHeader(chatUsername, isOnline) {
 
 function renderConversation(conversationInfo) {
     document.querySelector('.chat-content-list').innerHTML = conversationInfo
-        .map(({ fromName, toName, msg, time }) => {
+        .map(({ fromName, msg, time }) => {
             return `
         <div class="msg-item">
             <img class="msg-pic" src="http://icons.iconarchive.com/icons/iconsmind/outline/512/Cat-icon.png" />
@@ -99,12 +106,13 @@ document.querySelector('.send-content').addEventListener('keydown', (e) => {
         sendMessage();
     }
 });
+
 function sendMessage() {
     let msgContent = document.querySelector('.send-content').value;
     if (msgContent.length < 1) {
         return;
     }
-    socket.emit('sendMessage', currentUsername, currentChatUser, msgContent);
+    socket.emit('newMessage', currentUsername, currentChatUsername, msgContent);
     document.querySelector('.send-content').value = '';
 }
 
@@ -113,4 +121,5 @@ function scrollWindow() {
     chatContentList.scrollTo(0, chatContentList.scrollHeight);
 }
 
+// Remove notification after 3 secs
 setTimeout(() => document.querySelector('.noti-container').remove(), 3000);

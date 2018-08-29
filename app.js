@@ -31,21 +31,22 @@ io.on('connection', async (socket) => {
     let connectUsername;
     socket.on('online', async (user) => {
         connectUsername = user;
+
         await Users.updateOne({ username: user }, { isOnline: true }).exec();
         socket.broadcast.emit('updateUserInfo');
     });
 
-    socket.on('enterChatroom', async () => {
-        const user = await socketHandler.getUsers();
-        socket.emit('getUserInfo', user);
+    socket.on('getUserInfo', async () => {
+        const users = await socketHandler.getUsers();
+        socket.emit('getUserInfo', users);
     });
 
-    socket.on('enterConversation', async (currentUsername, chatUsername) => {
+    socket.on('getConversationInfo', async (currentUsername, chatUsername) => {
         const conversation = await socketHandler.getMessages(currentUsername, chatUsername);
         socket.emit('getConversationInfo', conversation);
     });
 
-    socket.on('sendMessage', async (currentUsername, chatUsername, msgContent) => {
+    socket.on('newMessage', async (currentUsername, chatUsername, msgContent) => {
         await socketHandler.storeMessages(currentUsername, chatUsername, msgContent);
 
         const conversation = await socketHandler.getMessages(currentUsername, chatUsername);
@@ -53,8 +54,8 @@ io.on('connection', async (socket) => {
         socket.broadcast.emit('newMessage');
     });
 
-    socket.on('disconnect', () => {
-        Users.updateOne({ username: connectUsername }, { isOnline: false }).exec();
+    socket.on('disconnect', async () => {
+        await Users.updateOne({ username: connectUsername }, { isOnline: false }).exec();
         socket.broadcast.emit('updateUserInfo');
     });
 });
